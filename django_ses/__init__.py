@@ -4,7 +4,7 @@ from django.core.mail.backends.base import BaseEmailBackend
 from django_ses import settings
 
 from boto.regioninfo import RegionInfo
-from boto.ses import SESConnection
+from boto.ses import SESConnection, connect_to_region
 
 from datetime import datetime, timedelta
 from time import sleep
@@ -82,15 +82,20 @@ class SESBackend(BaseEmailBackend):
             return False
 
         try:
-            self.connection = SESConnection(
-                aws_access_key_id=self._access_key_id,
-                aws_secret_access_key=self._access_key,
-                region=self._region,
-                proxy=self._proxy,
-                proxy_port=self._proxy_port,
-                proxy_user=self._proxy_user,
-                proxy_pass=self._proxy_pass,
-            )
+#             self.connection = SESConnection(
+#                 aws_access_key_id=self._access_key_id,
+#                 aws_secret_access_key=self._access_key,
+#                 region=self._region,
+#                 proxy=self._proxy,
+#                 proxy_port=self._proxy_port,
+#                 proxy_user=self._proxy_user,
+#                 proxy_pass=self._proxy_pass,
+#             )
+              self.connection = connect_to_region(
+                  settings.AWS_SES_REGION_NAME,
+                  aws_access_key_id = self._access_key_id,
+                  aws_secret_access_key = self._access_key
+              )
         except:
             if not self.fail_silently:
                 raise
